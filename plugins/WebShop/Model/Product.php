@@ -5,18 +5,6 @@ App::uses('AppModel', 'Model');
  */
 class Product extends AppModel {
 	
-   /**
-	* Model name
-	*/
-	public $name = 'Product';
-	
-	
-	/**
-	 *  Display field
-	 */
-	public $displayField = 'name';
-	
-	
 	/**
 	 * 
 	 * Pagination

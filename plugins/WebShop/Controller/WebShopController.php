@@ -9,7 +9,7 @@ class WebShopController extends AppController {
 	
 	//Attributes
 	var $components = array('ContentValueManager');
-	var $uses = array('Product'); 
+	var $uses = array('WebShop.Product'); 
 	var $layout = 'overlay';
 	
    /**
@@ -24,48 +24,36 @@ class WebShopController extends AppController {
 	* Function to create product.
 	*/
 	public function create($contentID){
+		if (isset($this->params['data']['cancel']))
+			$this->redirect(array('action' => 'admin', $contentID));
 		
-		//Attributes
-		$create_error = false;
-		
-		//CHECK request
-		if (empty($this->data)) {
-			$this->set('contentID', $contentID);
-			
-			return;
-		}
-		
-		//PROCESS request
-		if (isset($this->params['data']['save'])) {
-			//CHECK request
-			if (!$this->request->is('post'))
-				$create_error = true;
-				
-			//VALIDATE data
-			if(!$this->Product->validates())
-				$create_error = true;
-				
+		$this->set('contentID', $contentID);
+	
+		if (isset($this->params['data']['save']) and isset($this->data['Product'])){
 			//UPLOAD image
-			if(!$create_error){
-				$result = $this->uploadImage($this->request->data['Product']['submittedfile'], null, true);
-				$create_error = $result['error'];
+			if (!empty($this->data['Product']['submittedfile']['name']))
+				$result = $this->uploadImage($this->data['Product']['submittedfile'], null, true);
+			
+			if (isset($result)) {
 				$file_name = $result['file_name'];
+			} else {
+				$file_name = 'no_image.png';
 			}
-				
+			
 			//SAVE on DB
-			if(!$create_error){
-				$data['Product']['name'] = $this->data['Product']['name'];
-				$data['Product']['description'] = $this->data['Product']['description'];
-				$data['Product']['price'] = $this->data['Product']['price'];
-				$data['Product']['picture'] = $file_name;
-				
-				//SAVE on db
-				$create_error = !$this->Product->save($data);
+			$this->Product->set(array(
+						'name' => $this->data['Product']['name'],
+						'description' => $this->data['Product']['description'],
+						'price' => $this->data['Product']['price'],
+						'picture' => $file_name
+			));
+			
+			if ($this->Product->validates()) {
+				$this->Product->save();
+				//REDIRECT
+				$this->redirect(array('action' => 'admin', $contentID));
 			}
 		}
-
-		//REDIRECT
-		$this->redirect(array('action' => 'admin', $contentID));
 	}
 	
 	/**
@@ -126,7 +114,8 @@ class WebShopController extends AppController {
 		$data = $this->Product->findById($productID);
 		$file_path = WWW_ROOT.'../../plugins/WebShop/webroot//img/products/';
 		
-		@unlink($file_path.$data['Product']['picture']);
+		if ($data['Product']['picture'] != 'no_image.png')
+			@unlink($file_path.$data['Product']['picture']);
 		
 		//REMOVE db entry
 		$this->Product->delete($productID);
