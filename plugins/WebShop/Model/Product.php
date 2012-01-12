@@ -37,7 +37,7 @@ class Product extends AppModel {
 					'rule' => array('decimal', 2),
 				    'required' => true,
 					'allowEmpty' => false,
-				    'message'  => 'Preis ist eine Zahl.'
+				    'message'  => '"Preis" ist eine Zahl.'
 				)
 	);
 }
