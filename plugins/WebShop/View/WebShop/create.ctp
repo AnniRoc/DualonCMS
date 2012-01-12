@@ -1,9 +1,17 @@
 <!-- Create new products for the catalog -->
+<?php
+	//LOAD menu
+	echo $this->element('admin_menu', array('contentID' => $contentID));
+?>
+
 <?php 
 	//LOAD js
 	$this->Html->script('/ckeditor/ckeditor',false);
 	$this->Html->script('/ckeditor/adapters/jquery',false);
 	$this->Html->script('/web_shop/js/admin',false);
+	
+	//LOAD style-sheet
+	echo $this->Html->css('/web_shop/css/webshop');
 	
 	//DIV
 	echo '<div id="webshop_create">';

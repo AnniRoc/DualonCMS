@@ -9,16 +9,14 @@ class WebShopController extends AppController {
 	
 	//Attributes
 	var $components = array('ContentValueManager');
-	var $uses = array('Product'); 
+	var $uses = array('WebShop.Product'); 
 	var $layout = 'overlay';
 	
    /**
 	* Function for admin view.
 	*/
 	public function admin($contentID){
-		$this->setContentVar($contentID);
 		$this->set('products', $this->Product->find('all'));
-		$this->set('productAdminView', 'productsAdministration');
 		$this->set('contentID', $contentID);
 	}
 	
@@ -26,51 +24,36 @@ class WebShopController extends AppController {
 	* Function to create product.
 	*/
 	public function create($contentID){
+		if (isset($this->params['data']['cancel']))
+			$this->redirect(array('action' => 'admin', $contentID));
 		
-		//Attributes
-		$create_error = false;
-		
-		//CHECK request
-		if (empty($this->data)) {
-			$this->setContentVar($contentID);
-			$this->set('productAdminView', "create");
-			$this->set('contentID', $contentID);
-			$this->render("admin");
-			
-			return;
-		}
-		
-		//PROCESS request
-		if (isset($this->params['data']['save'])) {
-			//CHECK request
-			if (!$this->request->is('post'))
-				$create_error = true;
-				
-			//VALIDATE data
-			if(!$this->Product->validates())
-				$create_error = true;
-				
+		$this->set('contentID', $contentID);
+	
+		if (isset($this->params['data']['save']) and isset($this->data['Product'])){
 			//UPLOAD image
-			if(!$create_error){
-				$result = $this->uploadImage($this->request->data['Product']['submittedfile'], null, true);
-				$create_error = $result['error'];
+			if (!empty($this->data['Product']['submittedfile']['name']))
+				$result = $this->uploadImage($this->data['Product']['submittedfile'], null, true);
+			
+			if (isset($result)) {
 				$file_name = $result['file_name'];
+			} else {
+				$file_name = 'no_image.png';
 			}
-				
+			
 			//SAVE on DB
-			if(!$create_error){
-				$data['Product']['name'] = $this->data['Product']['name'];
-				$data['Product']['description'] = $this->data['Product']['description'];
-				$data['Product']['price'] = $this->data['Product']['price'];
-				$data['Product']['picture'] = $file_name;
-				
-				//SAVE on db
-				$create_error = !$this->Product->save($data);
+			$this->Product->set(array(
+						'name' => $this->data['Product']['name'],
+						'description' => $this->data['Product']['description'],
+						'price' => $this->data['Product']['price'],
+						'picture' => $file_name
+			));
+			
+			if ($this->Product->validates()) {
+				$this->Product->save();
+				//REDIRECT
+				$this->redirect(array('action' => 'admin', $contentID));
 			}
 		}
-
-		//REDIRECT
-		$this->redirect(array('action' => 'admin', $contentID));
 	}
 	
 	/**
@@ -86,11 +69,8 @@ class WebShopController extends AppController {
 		
 		//CHECK request
 		if (empty($this->data)) {
-			$this->setContentVar($contentID);
 			$this->data = $this->Product->read();
-			$this->set('productAdminView', "edit");
 			$this->set('contentID', $contentID);
-			$this->render("admin");
 				
 			return;
 		}
@@ -134,7 +114,8 @@ class WebShopController extends AppController {
 		$data = $this->Product->findById($productID);
 		$file_path = WWW_ROOT.'../../plugins/WebShop/webroot//img/products/';
 		
-		@unlink($file_path.$data['Product']['picture']);
+		if ($data['Product']['picture'] != 'no_image.png')
+			@unlink($file_path.$data['Product']['picture']);
 		
 		//REMOVE db entry
 		$this->Product->delete($productID);
@@ -199,25 +180,21 @@ class WebShopController extends AppController {
    /**
 	* Function to set content values.
 	*/
-	public function setContentValues($contentID) {
+	public function setContentValues($contentID) {		
 		if (!empty($this->data)) {
 			if (isset($this->data['ContentValues']['NumberOfEntries'])) {
-				$this->ContentValueManager->saveContentValues($contentID, $this->data['ContentValues']['NumberOfEntries']);
+				$this->ContentValueManager->saveContentValues($contentID, array('NumberOfEntries' => $this->data['ContentValues']['NumberOfEntries']));
 			}
-				
-			$this->redirect(array('action' => 'admin', $contentID));
+		} else {
+			$contentVars = $this->ContentValueManager->getContentValues($contentID);
+			
+			if (isset($contentVars['NumberOfEntries'])) {
+				$this->data = array('ContentValues' => array('NumberOfEntries' => $contentVars['NumberOfEntries']));
+			}
 		}
-	}
-	
-	/**
-	 * Function to set content values.
-	 */
-	function setContentVar($contentID) {
-		$contentVars = $this->ContentValueManager->getContentValues($contentID);
-	
-		if (isset($contentVars['NumberOfEntries'])) {
-			$this->set('numberOfEntries', $contentVars['NumberOfEntries']);
-		}
+		
+		$this->set('contentID', $contentID);
+		$this->render('settings');
 	}
 	
 	/**

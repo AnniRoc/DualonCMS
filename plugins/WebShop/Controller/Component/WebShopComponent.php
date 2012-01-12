@@ -10,23 +10,18 @@ class WebShopComponent extends Component {
    /**
 	* Method to transfer data from plugin to CMS.
 	*/
-	public function getData($controller, $params, $url)
+	public function getData($controller, $params, $url, $contentId, $myUrl)
 	{		
 		//CHECK url
 		if (isset($url)){
 			$data['Element'] = array_shift($url);
-			$func_params = $url;
-		} else if (isset($params['DefaultView'])) {
-			$data['Element'] = $params['DefaultView'];
-			$func_params = $params;
 		} else {
 			$data['Element'] = 'productOverview';
-			$func_params = null;
 		}
 		
 		//CALL corresponding comp. method
 		if (method_exists($this, $data['Element'])){
-			$func_data = $this->{$data['Element']}($controller, $func_params);
+			$func_data = $this->{$data['Element']}($controller, $url, $params, $myUrl);
 			if (isset($func_data['data'])) {
 				$data['data'] = $func_data['data'];
 			}
@@ -36,35 +31,30 @@ class WebShopComponent extends Component {
 		}
 		
 		//RETURN data
-		if ($data != null) {
-			if (!isset($data['data'])) { $data['data'] = null; }
-			if (!isset($data['Element'])) { $data['Element'] = null; }
+		if (!isset($data['data'])) { $data['data'] = null; }
 			
-			return $data;
-		} else {
-			return __('no data');
-		}
+		return $data;
 	}
 	
 	/**
 	 * Product-Overview.
 	 */
-	function productOverview($controller, $params){
+	function productOverview($controller, $url_params, $contentValues){
 		
 		//LOAD model
 		$controller->loadModel("Product");
 		
 		//Default NumberOfEntries
-		if(!isset($params['NumberOfEntries']))
-			$params['NumberOfEntries'] = 5;
+		if(!isset($contentValues['NumberOfEntries']))
+			$contentValues['NumberOfEntries'] = 5;
 			
 		//PAGINATION options
 		$controller->paginate = array('order' => array( 'Product.created' => 'desc'),
-						       	  'limit' => $params['NumberOfEntries']);
+						       	  'limit' => $contentValues['NumberOfEntries']);
 		
 		//Result data
 		$result['Product'] = $controller->paginate('Product');
-		$result['Limit'] = $params['NumberOfEntries'];
+		$result['Limit'] = $contentValues['NumberOfEntries'];
 		
 		//RETURN results for view
 		return array('data' => $result);
@@ -73,7 +63,7 @@ class WebShopComponent extends Component {
    /**
 	* Product-Search.
 	*/
-	function search($controller){
+	function search($controller, $url_params, $contentValues){
 		
 		//LOAD model
 		$controller->loadModel('Product');
@@ -84,14 +74,18 @@ class WebShopComponent extends Component {
 			//PAGINATION options
 			$controller->paginate = array(
 					        'conditions' => array('MATCH(Product.name,Product.description) AGAINST("'.$controller->data['Search']['Suche'].'" IN BOOLEAN MODE)'),
-					        'limit' => 10
+					        'limit' => $contentValues['NumberOfEntries']
 			);
 			
 			//WRITE search-key to session
 			$controller->Session->write('searchkey', $controller->data['Search']['Suche']);
 			
+			//RESULT data
+			$result['search'] = $controller->paginate('Product');
+			$result['limit'] = $contentValues['NumberOfEntries'];
+			
 			//RETURN results for view
-			return array('data' => $controller->paginate('Product'));
+			return array('data' => $result);
 		}
 		
 		//DATA from session
@@ -102,11 +96,15 @@ class WebShopComponent extends Component {
 			//PAGINATION options
 			$controller->paginate = array(
 								        'conditions' => array('MATCH(Product.name,Product.description) AGAINST("'.$search_key.'" IN BOOLEAN MODE)'),
-								        'limit' => 10
+								        'limit' => $contentValues['NumberOfEntries']
 			);
 			
+			//RESULT data
+			$result['search'] = $controller->paginate('Product');
+			$result['limit'] = $contentValues['NumberOfEntries'];
+			
 			//RETURN results for view
-			return array('data' => $controller->paginate('Product'));
+			return array('data' => $result);
 		}
 	}
 	
@@ -150,7 +148,7 @@ class WebShopComponent extends Component {
    /**
 	* Adds product to shopping cart.
 	*/
-	function add($controller, $id=null) {
+	function add($controller, $id=null, $contentValues=null, $url=null) {
 		
 		//ATTRIBUTES
 		$productIDs = $controller->Session->read('products');
@@ -185,14 +183,13 @@ class WebShopComponent extends Component {
 		$controller->Session->write('products', $productIDs);
 		
 		//REDIRECT to cart
-		$data = $this->cart($controller);
-		return array('Element' => 'cart', 'data' => $data['data']);
+		$controller->redirect($url.'/webshop/cart');
 	}
 	
    /**
 	* Removes product from shopping cart.
 	*/
-	function remove($controller, $id=null) {
+	function remove($controller, $id=null, $contentValues=null, $url=null) {
 		
 		//GET all IDs (+ amount) from session
 		$productIDs = $controller->Session->read('products');
@@ -217,14 +214,13 @@ class WebShopComponent extends Component {
 		$controller->Session->write('products', $productIDs);
 	
 		//REDIRECT to cart
-		$data = $this->cart($controller);
-		return array('Element' => 'cart', 'data' => $data['data']);
+		$controller->redirect($url.'/webshop/cart');
 	}
 	
 	/**
 	 * Submit oder to Administrator.
 	 */
-	function submitOrder($controller){
+	function submitOrder($controller, $id=null, $contentValues=null, $url=null){
 		
 		//LOAD model
 		$controller->loadModel('Product');
@@ -250,7 +246,6 @@ class WebShopComponent extends Component {
 		$controller->Session->write('products', null);
 		
 		//REDIRECT to cart
-		$data = $this->cart($controller);
-		return array('Element' => 'cart', 'data' => $data['data']);
+		$controller->redirect($url.'/webshop/cart');
 	}	
 }
