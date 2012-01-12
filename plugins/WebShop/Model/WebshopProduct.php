@@ -6,17 +6,6 @@ App::uses('AppModel', 'Model');
 class WebshopProduct extends AppModel {
 	
 	/**
-	 * Pagination
-	 */
-	public $paginate = array(
-	        'limit' => 10,
-	        'order' => array(
-	            'WebshopProduct.id' => 'asc'
-	)
-	);
-	
-	
-	/**
 	 *  Validation
 	 */
 	public $validate = array(
@@ -39,4 +28,18 @@ class WebshopProduct extends AppModel {
 				    'message'  => '"Preis" ist eine Zahl.'
 				)
 	);
+	
+   /**
+	*  DB-Relationship
+	*/
+	public $hasAndBelongsToMany = array(
+        'WebshopProduct' =>
+            array(
+                'className'              => 'WebshopOrder',
+                'joinTable'              => 'webshop_positions',
+                'foreignKey'             => 'product_id',
+                'associationForeignKey'  => 'order_id',
+                'unique'                 => true
+            )
+    );
 }
