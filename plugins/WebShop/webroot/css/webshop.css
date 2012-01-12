@@ -49,10 +49,31 @@
 #webshop_product_administration table{
 	margin-top:10px;
 	margin-bottom:20px;
+	border-spacing: 0px;
+	width: 100%;
+}
+
+#webshop_product_administration thead tr{
+	background-color: #EEEEEE;
+}
+
+#webshop_product_administration thead tr th{
+	padding-left:5px;
+	padding-right:20px;
+	padding-top:5px;
+	padding-bottom: 5px;
+	border: 1px solid #CCCCCC;
+}
+
+#webshop_product_administration thead tr th p{
+	margin-top:2px;
+	float:left;
 }
 
 #webshop_product_administration td{
-	padding-right:25px;
+	padding-left:5px;
+	padding-right:20px;
+	padding-top: 5px;
 }
 
 .webshop_detailview_image{
@@ -115,3 +136,17 @@
 .webshop_infobox td{
 	padding: 5px 10px 5px 10px;
 }
+
+.webshop_orientation_right{
+	text-align:right;
+}
+
+.webshop_button{
+    border-radius:4px;
+    background-color: #cccccc;
+    border:1px solid #999;
+    cursor:pointer;
+    padding:1px 4px 1px 4px;
+    color:#000;
+    text-decoration:none;
+  }
