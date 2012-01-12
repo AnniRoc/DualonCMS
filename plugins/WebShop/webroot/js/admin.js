@@ -1,5 +1,5 @@
 $(document).ready(function () {	
-    $('#ProductDescription').ckeditor(function () {
+    $('#WebshopProductDescription').ckeditor(function () {
         },
         {
 

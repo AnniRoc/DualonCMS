@@ -42,18 +42,18 @@ class WebShopComponent extends Component {
 	function productOverview($controller, $url_params, $contentValues){
 		
 		//LOAD model
-		$controller->loadModel("Product");
+		$controller->loadModel("WebshopProduct");
 		
 		//Default NumberOfEntries
 		if(!isset($contentValues['NumberOfEntries']))
 			$contentValues['NumberOfEntries'] = 5;
 			
 		//PAGINATION options
-		$controller->paginate = array('order' => array( 'Product.created' => 'desc'),
+		$controller->paginate = array('order' => array( 'WebshopProduct.created' => 'desc'),
 						       	  'limit' => $contentValues['NumberOfEntries']);
 		
 		//Result data
-		$result['Product'] = $controller->paginate('Product');
+		$result['Product'] = $controller->paginate('WebshopProduct');
 		$result['Limit'] = $contentValues['NumberOfEntries'];
 		
 		//RETURN results for view
@@ -66,14 +66,14 @@ class WebShopComponent extends Component {
 	function search($controller, $url_params, $contentValues){
 		
 		//LOAD model
-		$controller->loadModel('Product');
+		$controller->loadModel('WebshopProduct');
 		
 		//DATA from request
 		if (!empty($controller->data)) {
 			
 			//PAGINATION options
 			$controller->paginate = array(
-					        'conditions' => array('MATCH(Product.name,Product.description) AGAINST("'.$controller->data['Search']['Suche'].'" IN BOOLEAN MODE)'),
+					        'conditions' => array('MATCH(WebshopProduct.name,WebshopProduct.description) AGAINST("'.$controller->data['Search']['Suche'].'" IN BOOLEAN MODE)'),
 					        'limit' => $contentValues['NumberOfEntries']
 			);
 			
@@ -81,7 +81,7 @@ class WebShopComponent extends Component {
 			$controller->Session->write('searchkey', $controller->data['Search']['Suche']);
 			
 			//RESULT data
-			$result['search'] = $controller->paginate('Product');
+			$result['search'] = $controller->paginate('WebshopProduct');
 			$result['limit'] = $contentValues['NumberOfEntries'];
 			
 			//RETURN results for view
@@ -95,12 +95,12 @@ class WebShopComponent extends Component {
 			
 			//PAGINATION options
 			$controller->paginate = array(
-								        'conditions' => array('MATCH(Product.name,Product.description) AGAINST("'.$search_key.'" IN BOOLEAN MODE)'),
+								        'conditions' => array('MATCH(WebshopProduct.name,WebshopProduct.description) AGAINST("'.$search_key.'" IN BOOLEAN MODE)'),
 								        'limit' => $contentValues['NumberOfEntries']
 			);
 			
 			//RESULT data
-			$result['search'] = $controller->paginate('Product');
+			$result['search'] = $controller->paginate('WebshopProduct');
 			$result['limit'] = $contentValues['NumberOfEntries'];
 			
 			//RETURN results for view
@@ -114,10 +114,10 @@ class WebShopComponent extends Component {
 	function view($controller, $id=null) {
 		
 		//LOAD model
-		$controller->loadModel('Product');
+		$controller->loadModel('WebshopProduct');
 		
 		//RETURN product
-		return array('data' => $controller->Product->findById($id));
+		return array('data' => $controller->WebshopProduct->findById($id));
 	}
 	
    /**
@@ -129,14 +129,14 @@ class WebShopComponent extends Component {
 		$data = array();
 		
 		//LOAD model
-		$controller->loadModel('Product');
+		$controller->loadModel('WebshopProduct');
 		
 		//GET all IDs (+ amount) from session
 		$productIDs = $controller->Session->read('products');
 		
 		//COLLECT data
 		foreach ((!isset($productIDs)) ? array() : $productIDs as $productID) {
-			$product = $controller->Product->findById($productID['id'], array('fields' => 'Product.id, Product.name, Product.price, Product.picture'));
+			$product = $controller->WebshopProduct->findById($productID['id'], array('fields' => 'WebshopProduct.id, WebshopProduct.name, WebshopProduct.price, WebshopProduct.picture'));
 			$product['count'] = $productID['count'];
 			array_push($data, $product);
 		}
@@ -223,24 +223,14 @@ class WebShopComponent extends Component {
 	function submitOrder($controller, $id=null, $contentValues=null, $url=null){
 		
 		//LOAD model
-		$controller->loadModel('Product');
+		$controller->loadModel('WebshopProduct');
 		
 		//GET all IDs (+ amount) from session
 		$productIDs = $controller->Session->read('products');
 		
-		//BUILD mail
-		App::uses('CakeEmail', 'Network/Email');
-		$email = new CakeEmail();
-		$email->template('WebShop.order', 'email')
-			  ->emailFormat('html')
-			  ->to('maximilian.stueber@me.com')
-	          ->from('maximilian.stueber@me.com'/*'noreply@'.env('SERVER_NAME'), env('SERVER_NAME')*/)
-			  ->subject('Order')
-			  ->viewVars(array(
-		        	'order' => $productIDs,
-					'url' => 'localhost'/*env('SERVER_NAME')*/,
-		))
-		->send();
+		//SEND mail
+		$this->Components->load('BeeEmailComponent');
+		$this->BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $productIDs, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
 		
 		//UNSET cart
 		$controller->Session->write('products', null);

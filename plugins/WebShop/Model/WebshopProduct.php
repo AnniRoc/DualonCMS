@@ -3,16 +3,15 @@ App::uses('AppModel', 'Model');
 /**
  * Product Model.
  */
-class Product extends AppModel {
+class WebshopProduct extends AppModel {
 	
 	/**
-	 * 
 	 * Pagination
 	 */
 	public $paginate = array(
 	        'limit' => 10,
 	        'order' => array(
-	            'Product.id' => 'asc'
+	            'WebshopProduct.id' => 'asc'
 	)
 	);
 	
@@ -34,7 +33,7 @@ class Product extends AppModel {
 		        ),
 		        
 				'price' => array(
-					'rule' => array('decimal', 2),
+					'rule' => 'numeric',
 				    'required' => true,
 					'allowEmpty' => false,
 				    'message'  => '"Preis" ist eine Zahl.'

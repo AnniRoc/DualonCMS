@@ -20,14 +20,13 @@
 	echo '<h2>Artikel bearbeiten</h2>';
 
 	//PRINT error/success messages
-	$validationErrors = $this->Session->read('Validation.Product.validationErrors');
-	//echo $this->Html->div('validation_error',$validationErrors);
-	echo $this->Session->flash('Product');
+	$validationErrors = $this->Session->read('Validation.WebshopProduct.validationErrors');
+	echo $this->Session->flash('WebshopProduct');
 	
-	echo $this->Form->create('Product', array('enctype' => 'multipart/form-data', 'url' => array('controller' => 'WebShop', 'action' => 'edit', $contentID, $this->data['Product']['id']))); ?>
+	echo $this->Form->create('WebshopProduct', array('enctype' => 'multipart/form-data', 'url' => array('controller' => 'WebShop', 'action' => 'edit', $contentID, $this->data['WebshopProduct']['id']))); ?>
 	<table>
 		<tr>
-			<td> <?php echo $this->Form->label('Name:'); ?></td>
+			<td><?php echo $this->Form->label('Name:'); ?></td>
 			<td><?php echo $this->Form->input('name', array('label' => false, 'div' => '')); ?></td>
 		</tr>
 		<tr>
@@ -40,11 +39,11 @@
 		</tr>
 		<tr>
 			<td><?php echo $this->Form->label('Bild:'); ?></td>
-			<td><?php echo $this->Form->file('Products.submittedfile', array('label' => false, 'div' => ''));?></td>
+			<td><?php echo $this->Form->file('WebshopProduct.submittedfile', array('label' => false, 'div' => ''));?></td>
 		</tr>
 		<tr>
 			<td><?php echo $this->Form->label('Aktuelles Bild:'); ?></td>
-			<td><?php echo $this->Html->image('/WebShop/img/products/'.$this->data['Product']['picture'], array('style' => 'width: 100px')); ?></td>
+			<td><?php echo $this->Html->image('/WebShop/img/products/'.$this->data['WebshopProduct']['picture'], array('style' => 'width: 100px')); ?></td>
 		</tr>
 	</table>
 	<?php echo $this->Form->submit(__('Speichern', true), array('name' => 'save', 'div' => false)); ?>

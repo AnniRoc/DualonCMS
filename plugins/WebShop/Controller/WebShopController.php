@@ -9,14 +9,14 @@ class WebShopController extends AppController {
 	
 	//Attributes
 	var $components = array('ContentValueManager');
-	var $uses = array('WebShop.Product'); 
+	var $uses = array('WebShop.WebshopProduct'); 
 	var $layout = 'overlay';
 	
    /**
 	* Function for admin view.
 	*/
 	public function admin($contentID){
-		$this->set('products', $this->Product->find('all'));
+		$this->set('products', $this->WebshopProduct->find('all'));
 		$this->set('contentID', $contentID);
 	}
 	
@@ -24,15 +24,18 @@ class WebShopController extends AppController {
 	* Function to create product.
 	*/
 	public function create($contentID){
+		
+		//PROCESS cancle
 		if (isset($this->params['data']['cancel']))
 			$this->redirect(array('action' => 'admin', $contentID));
 		
 		$this->set('contentID', $contentID);
 	
-		if (isset($this->params['data']['save']) and isset($this->data['Product'])){
+		//PROCESS save
+		if (isset($this->params['data']['save']) and isset($this->data['WebshopProduct'])){
 			//UPLOAD image
-			if (!empty($this->data['Product']['submittedfile']['name']))
-				$result = $this->uploadImage($this->data['Product']['submittedfile'], null, true);
+			if (!empty($this->data['WebshopProduct']['submittedfile']['name']))
+				$result = $this->uploadImage($this->data['WebshopProduct']['submittedfile'], null, true);
 			
 			if (isset($result)) {
 				$file_name = $result['file_name'];
@@ -41,15 +44,16 @@ class WebShopController extends AppController {
 			}
 			
 			//SAVE on DB
-			$this->Product->set(array(
-						'name' => $this->data['Product']['name'],
-						'description' => $this->data['Product']['description'],
-						'price' => $this->data['Product']['price'],
+			$this->WebshopProduct->set(array(
+						'name' => $this->data['WebshopProduct']['name'],
+						'description' => $this->data['WebshopProduct']['description'],
+						'price' => $this->data['WebshopProduct']['price'],
 						'picture' => $file_name
 			));
 			
-			if ($this->Product->validates()) {
-				$this->Product->save();
+			if ($this->WebshopProduct->validates()) {
+				$this->WebshopProduct->save();
+				
 				//REDIRECT
 				$this->redirect(array('action' => 'admin', $contentID));
 			}
@@ -65,11 +69,11 @@ class WebShopController extends AppController {
 		$update_error = false;
 		
 		//SET id
-		$this->Product->id = $productID;
+		$this->WebshopProduct->id = $productID;
 		
 		//CHECK request
 		if (empty($this->data)) {
-			$this->data = $this->Product->read();
+			$this->data = $this->WebshopProduct->read();
 			$this->set('contentID', $contentID);
 				
 			return;
@@ -79,24 +83,24 @@ class WebShopController extends AppController {
 		if (isset($this->params['data']['save'])) {
 	
 			//UPDATE db info
-			$data_old = $this->Product->read();
+			$data_old = $this->WebshopProduct->read();
 			$data_new = $this->data;
 			
 			//UPLOAD new file (if necessary)			
-			if (!empty($data_new['Products']['submittedfile']['name'])){
-				$result = $this->uploadImage($data_new['Products']['submittedfile'], $data_old['Product']['picture'], true);
+			if (!empty($data_new['WebshopProduct']['submittedfile']['name'])){
+				$result = $this->uploadImage($data_new['WebshopProduct']['submittedfile'], $data_old['WebshopProduct']['picture'], true);
 				
-				$data_new['Product']['picture'] = $result['file_name'];
+				$data_new['WebshopProduct']['picture'] = $result['file_name'];
 				$update_error = $result['error'];
 			}
 			
 			//SET new data
 			if(!$update_error){
-				$this->Product->set($data_old);
-				$this->Product->set($data_new);
+				$this->WebshopProduct->set($data_old);
+				$this->WebshopProduct->set($data_new);
 			
 				//SAVE
-				$update_error = !$this->Product->save();
+				$update_error = !$this->WebshopProduct->save();
 			}
 		}
 		
@@ -111,14 +115,14 @@ class WebShopController extends AppController {
 	public function remove($contentID, $productID){
 		
 		//REMOVE picture
-		$data = $this->Product->findById($productID);
+		$data = $this->WebshopProduct->findById($productID);
 		$file_path = WWW_ROOT.'../../plugins/WebShop/webroot//img/products/';
 		
-		if ($data['Product']['picture'] != 'no_image.png')
-			@unlink($file_path.$data['Product']['picture']);
+		if ($data['WebshopProduct']['picture'] != 'no_image.png')
+			@unlink($file_path.$data['WebshopProduct']['picture']);
 		
 		//REMOVE db entry
-		$this->Product->delete($productID);
+		$this->WebshopProduct->delete($productID);
 		
 		$this->redirect(array('action' => 'admin', $contentID));
 	}
@@ -150,7 +154,7 @@ class WebShopController extends AppController {
 		}
 		
 		//REMOVE old image
-		if(!$init_creation){
+		if(!$init_creation && $file_old != 'no_image.png'){
 			@unlink($file_path.$file_old);
 		}
 	

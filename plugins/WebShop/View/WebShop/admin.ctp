@@ -20,16 +20,16 @@
 			</thead>
 			<?php foreach ($products as $product): ?>
 			    <tr>
-				    <td><?php echo $product['Product']['name']; ?></td>
-				    <td class="webshop_orientation_right"><?php echo $product['Product']['created']; ?></td>
+				    <td><?php echo $product['WebshopProduct']['name']; ?></td>
+				    <td class="webshop_orientation_right"><?php echo $product['WebshopProduct']['created']; ?></td>
 				    <td class="webshop_orientation_right"><?php echo $this->Html->link(
 				    			 		$this->Html->image("edit.png", array('width' => '32px')), 
-				    					array('action' => 'edit', $contentID, $product['Product']['id']),
+				    					array('action' => 'edit', $contentID, $product['WebshopProduct']['id']),
 				    					array('escape' => False)
 				    				);?>
 				    	<?php echo $this->Html->link(
 				    					$this->Html->image("delete.png", array('width' => '32px')), 
-				    					array('action' => 'remove', $contentID, $product['Product']['id']),
+				    					array('action' => 'remove', $contentID, $product['WebshopProduct']['id']),
 				    					array('escape' => False)
 				    				);?>
 				    </td>
