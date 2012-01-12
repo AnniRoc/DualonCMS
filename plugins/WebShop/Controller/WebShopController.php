@@ -16,9 +16,7 @@ class WebShopController extends AppController {
 	* Function for admin view.
 	*/
 	public function admin($contentID){
-		$this->setContentVar($contentID);
 		$this->set('products', $this->Product->find('all'));
-		$this->set('productAdminView', 'productsAdministration');
 		$this->set('contentID', $contentID);
 	}
 	
@@ -32,10 +30,7 @@ class WebShopController extends AppController {
 		
 		//CHECK request
 		if (empty($this->data)) {
-			$this->setContentVar($contentID);
-			$this->set('productAdminView', "create");
 			$this->set('contentID', $contentID);
-			$this->render("admin");
 			
 			return;
 		}
@@ -86,11 +81,8 @@ class WebShopController extends AppController {
 		
 		//CHECK request
 		if (empty($this->data)) {
-			$this->setContentVar($contentID);
 			$this->data = $this->Product->read();
-			$this->set('productAdminView', "edit");
 			$this->set('contentID', $contentID);
-			$this->render("admin");
 				
 			return;
 		}
@@ -199,25 +191,21 @@ class WebShopController extends AppController {
    /**
 	* Function to set content values.
 	*/
-	public function setContentValues($contentID) {
+	public function setContentValues($contentID) {		
 		if (!empty($this->data)) {
 			if (isset($this->data['ContentValues']['NumberOfEntries'])) {
-				$this->ContentValueManager->saveContentValues($contentID, $this->data['ContentValues']['NumberOfEntries']);
+				$this->ContentValueManager->saveContentValues($contentID, array('NumberOfEntries' => $this->data['ContentValues']['NumberOfEntries']));
 			}
-				
-			$this->redirect(array('action' => 'admin', $contentID));
+		} else {
+			$contentVars = $this->ContentValueManager->getContentValues($contentID);
+			
+			if (isset($contentVars['NumberOfEntries'])) {
+				$this->data = array('ContentValues' => array('NumberOfEntries' => $contentVars['NumberOfEntries']));
+			}
 		}
-	}
-	
-	/**
-	 * Function to set content values.
-	 */
-	function setContentVar($contentID) {
-		$contentVars = $this->ContentValueManager->getContentValues($contentID);
-	
-		if (isset($contentVars['NumberOfEntries'])) {
-			$this->set('numberOfEntries', $contentVars['NumberOfEntries']);
-		}
+		
+		$this->set('contentID', $contentID);
+		$this->render('settings');
 	}
 	
 	/**

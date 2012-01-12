@@ -1,4 +1,9 @@
 <!-- Create new products for the catalog -->
+<?php
+	//LOAD menu
+	echo $this->element('admin_menu', array('contentID' => $contentID));
+?>
+
 <?php 
 	//LOAD js
 	$this->Html->script('/ckeditor/ckeditor',false);

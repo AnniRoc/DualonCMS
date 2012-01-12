@@ -1,6 +1,4 @@
-$(document).ready(function () {
-	$( "#tabs" ).tabs();
-	
+$(document).ready(function () {	
     $('#ProductDescription').ckeditor(function () {
         },
         {
