@@ -13,22 +13,21 @@
 	<div id="webshop_product_administration">
 		<h1>Produkt-Administration</h1>	
 		<table>
-			<tr>
-				<th>Name</th>
-				<th>Preis</th>
-				<th colspan="2">Aktionen</th>
-			</tr>
+			<thead>
+				<tr>
+					<th colspan="3"><p>Produkte</p><?php echo $this->Form->postLink("Neu", array('controller' => 'WebShop', 'action' => 'create', $contentID), array('style' => 'float: right', 'class' => 'webshop_button')); ?></th>
+				</tr>
+			</thead>
 			<?php foreach ($products as $product): ?>
 			    <tr>
 				    <td><?php echo $product['Product']['name']; ?></td>
-				    <td><?php echo $product['Product']['price']; ?></td>
-				    <td><?php echo $this->Html->link(
+				    <td class="webshop_orientation_right"><?php echo $product['Product']['created']; ?></td>
+				    <td class="webshop_orientation_right"><?php echo $this->Html->link(
 				    			 		$this->Html->image("edit.png", array('width' => '32px')), 
 				    					array('action' => 'edit', $contentID, $product['Product']['id']),
 				    					array('escape' => False)
 				    				);?>
-				    </td>
-				    <td><?php echo $this->Html->link(
+				    	<?php echo $this->Html->link(
 				    					$this->Html->image("delete.png", array('width' => '32px')), 
 				    					array('action' => 'remove', $contentID, $product['Product']['id']),
 				    					array('escape' => False)
@@ -37,6 +36,4 @@
 			    </tr>
 			<?php endforeach; ?>
 		</table>
-		
-		<?php echo $this->Form->postLink("Neues Produkt", array('controller' => 'WebShop', 'action' => 'create', $contentID), array('style' => "font-weight: bold")); ?>
 	</div>

@@ -25,16 +25,16 @@
 	echo '</p>';
 	
 	//CREATE serch catalog
-	$last_element = (!isset($data)) ? null : end($data);
+	$last_element = (!isset($data['search'])) ? null : end($data['search']);
 	
 	if (isset($this->Paginator) && $this->Paginator->counter('{:pages}') > 1)
-		$start_value = ($this->Paginator->counter('{:page}') - 1) * 10 + 1;
+		$start_value = ($this->Paginator->counter('{:page}') - 1) * $data['limit'] + 1;
 	else
 		$start_value = 1;
 	
 	//PRINT products
 	echo '<ol start="'.$start_value.'">';
-	foreach ((!isset($data)) ? array() : $data as $product){
+	foreach ((!isset($data['search'])) ? array() : $data['search'] as $product){
 		echo '<li>';
 		
 		echo $this->Html->image('/WebShop/img/products/'.$product['Product']['picture'], array('url' => $url.'/webshop/view/'.$product['Product']['id'], 'escape' => False));

@@ -80,8 +80,12 @@ class WebShopComponent extends Component {
 			//WRITE search-key to session
 			$controller->Session->write('searchkey', $controller->data['Search']['Suche']);
 			
+			//RESULT data
+			$result['search'] = $controller->paginate('Product');
+			$result['limit'] = $contentValues['NumberOfEntries'];
+			
 			//RETURN results for view
-			return array('data' => $controller->paginate('Product'));
+			return array('data' => $result);
 		}
 		
 		//DATA from session
@@ -95,8 +99,12 @@ class WebShopComponent extends Component {
 								        'limit' => $contentValues['NumberOfEntries']
 			);
 			
+			//RESULT data
+			$result['search'] = $controller->paginate('Product');
+			$result['limit'] = $contentValues['NumberOfEntries'];
+			
 			//RETURN results for view
-			return array('data' => $controller->paginate('Product'));
+			return array('data' => $result);
 		}
 	}
 	
