@@ -7,6 +7,9 @@
  */
 class WebShopComponent extends Component {
 	
+	//Attributes
+	var $components = array('BeeEmail');
+	
    /**
 	* Method to transfer data from plugin to CMS.
 	*/
@@ -229,9 +232,7 @@ class WebShopComponent extends Component {
 		$productIDs = $controller->Session->read('products');
 		
 		//SEND mail
-		App::import('Component', 'BeeEmail');
-		$BeeEmail = new BeeEmailComponent();
-		$BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $productIDs, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
+		$this->BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $productIDs, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
 		
 		//UNSET cart
 		$controller->Session->write('products', null);

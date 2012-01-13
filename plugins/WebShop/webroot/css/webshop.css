@@ -23,6 +23,10 @@
 	margin-bottom: 20px;
 }
 
+#webshop_cart td{
+	vertical-align: top;
+}
+
 #websop_productcatalog li{
 	color: #000000;
 }
