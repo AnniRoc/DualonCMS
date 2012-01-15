@@ -59,14 +59,14 @@
 							
 							echo '<tr>';
 							echo '<td>'.$position['Product']['WebshopProduct']['name'].' (ID: '.$position['Product']['WebshopProduct']['id'].')</td>';
-							echo '<td>'.$position['count'].'</td>';
-							echo '<td>'.$position['Product']['WebshopProduct']['price'].'</td>';
-							echo '<td>'.$pricePerProd.'</td>';
+							echo '<td>'.$position['count'].' Stck.</td>';
+							echo '<td>'.number_format($position['Product']['WebshopProduct']['price'], 2, ',', '.').' '.$position['Product']['WebshopProduct']['currency'].'</td>';
+							echo '<td>'.number_format($pricePerProd, 2, ',', '.').' '.$position['Product']['WebshopProduct']['currency'].'</td>';
 							echo '</tr>';
 						}
 						
 						echo '<tr>';
-						echo '<td style="text-align: right;" colspan="4"><strong>Bestellwert: '.$totalPrice.'</strong></td>';
+						echo '<td style="text-align: right; padding-top:15px" colspan="4"><strong>Bestellwert: '.number_format($totalPrice, 2, ',', '.').' '.$position['Product']['WebshopProduct']['currency'].'</strong></td>';
 						echo '</tr>';
 						echo '</table>';
 					echo '</td>';
