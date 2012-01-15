@@ -135,7 +135,7 @@ class WebShopComponent extends Component {
 		$controller->loadModel('WebshopProduct');
 		
 		//GET all IDs (+ amount) from session
-		$productIDs = $controller->Session->read('products');
+		$productIDs = $controller->Session->read('webshop_cart');
 		
 		//COLLECT data
 		foreach ((!isset($productIDs)) ? array() : $productIDs as $productID) {
@@ -154,7 +154,7 @@ class WebShopComponent extends Component {
 	function add($controller, $id=null, $contentValues=null, $url=null) {
 		
 		//ATTRIBUTES
-		$productIDs = $controller->Session->read('products');
+		$productIDs = $controller->Session->read('webshop_cart');
 		$positon = array();
 		$results = false;
 	
@@ -183,7 +183,7 @@ class WebShopComponent extends Component {
 		sort($productIDs);
 			
 		//WRITE to SESSION		
-		$controller->Session->write('products', $productIDs);
+		$controller->Session->write('webshop_cart', $productIDs);
 		
 		//REDIRECT to cart
 		$controller->redirect($url.'/webshop/cart');
@@ -195,7 +195,7 @@ class WebShopComponent extends Component {
 	function remove($controller, $id=null, $contentValues=null, $url=null) {
 		
 		//GET all IDs (+ amount) from session
-		$productIDs = $controller->Session->read('products');
+		$productIDs = $controller->Session->read('webshop_cart');
 	
 		//REMOVE prod. from cart
 		for($i = 0; $i < count($productIDs); $i++){
@@ -214,7 +214,7 @@ class WebShopComponent extends Component {
 		sort($productIDs);
 	
 		//WRITE to SESSION
-		$controller->Session->write('products', $productIDs);
+		$controller->Session->write('webshop_cart', $productIDs);
 	
 		//REDIRECT to cart
 		$controller->redirect($url.'/webshop/cart');
@@ -241,7 +241,7 @@ class WebShopComponent extends Component {
 		$controller->WebshopOrder->save();
 		
 		//GET all IDs (+ amount) from session
-		$productIDs = $controller->Session->read('products');
+		$productIDs = $controller->Session->read('webshop_cart');
 		
 		foreach ((!isset($productIDs)) ? array() : $productIDs as $productID) {
 			$product = $controller->WebshopProduct->findById($productID['id'], array('fields' => 'WebshopProduct.id, WebshopProduct.name, WebshopProduct.price'));
@@ -263,7 +263,7 @@ class WebShopComponent extends Component {
 		$this->BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $order, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
 		
 		//UNSET cart
-		$controller->Session->write('products', null);
+		$controller->Session->write('webshop_cart', null);
 		
 		//REDIRECT to cart
 		$controller->redirect($url.'/webshop/cart');
