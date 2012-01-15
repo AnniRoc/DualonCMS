@@ -1,5 +1,5 @@
 <?php 
-/* WebShop schema generated on: 2012-01-15 01:00:29 : 1326585629*/
+/* WebShop schema generated on: 2012-01-15 11:35:43 : 1326623743*/
 class WebShopSchema extends CakeSchema {
 	function before($event = array()) {
 		return true;

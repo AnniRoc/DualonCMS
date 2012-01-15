@@ -9,7 +9,7 @@ class WebShopController extends AppController {
 	
 	//Attributes
 	var $components = array('ContentValueManager');
-	var $uses = array('WebShop.WebshopProduct'); 
+	var $uses = array('WebShop.WebshopProduct', 'WebShop.WebshopOrder', 'WebShop.WebshopPosition'); 
 	var $layout = 'overlay';
 	
    /**
@@ -19,6 +19,41 @@ class WebShopController extends AppController {
 		$this->set('products', $this->WebshopProduct->find('all'));
 		$this->set('contentID', $contentID);
 	}
+	
+	/**
+	* Function for openOrders view.
+	*/
+	public function openOrders($contentID){
+		
+		$orders = $this->WebshopOrder->findAllByStatus(0);
+		
+		//GET product data
+		for($i = 0; $i < count($orders[0]['WebshopPosition']); $i++){
+			$orders[0]['WebshopPosition'][$i]['Product'] = $this->WebshopProduct->findById($orders[0]['WebshopPosition'][$i]['product_id']);
+		}
+		
+		$this->set('orders', $orders);
+		$this->set('contentID', $contentID);
+	}
+	
+	/**
+	* Function to edit product.
+	*/
+	public function closeOrder($contentID, $orderID=null){
+		
+		$this->WebshopOrder->id = $orderID;
+		
+		//UPDATE DB
+		$order = $this->WebshopOrder->read();
+		$order['WebshopOrder']['status'] = 1;
+		
+		$this->WebshopOrder->set($order);	
+		$this->WebshopOrder->save();
+		
+		//REDIRECT
+		$this->redirect(array('action' => 'openOrders', $contentID));
+	}
+	
 	
    /**
 	* Function to create product.

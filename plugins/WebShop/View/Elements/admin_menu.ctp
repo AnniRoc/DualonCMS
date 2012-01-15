@@ -7,6 +7,8 @@
     <ol class="nav">
 
         <li><?php echo $this->Html->link('Produkte verwalten',array('controller' => 'WebShop', 'action' => 'admin', $contentID));?></li>
+        
+        <li><?php echo $this->Html->link('Offene Bestellungen',array('controller' => 'WebShop', 'action' => 'openOrders', $contentID));?></li>
 
         <li><?php echo $this->Html->link('Einstellungen',array('controller' => 'WebShop', 'action' => 'setContentValues', $contentID));?></li>
 
