@@ -250,7 +250,7 @@ class WebShopComponent extends Component {
 			
 			array_push($pos_data,
 					   array('WebshopPosition' => array(
-									'product_id' => $productID['id'],
+									'product_id' => $productID['id'][0],
 									'order_id' => $controller->WebshopOrder->id,
 									'count' => $product['count']))
 			);
