@@ -28,8 +28,10 @@ class WebShopController extends AppController {
 		$orders = $this->WebshopOrder->findAllByStatus(0);
 		
 		//GET product data
-		for($i = 0; $i < count($orders[0]['WebshopPosition']); $i++){
-			$orders[0]['WebshopPosition'][$i]['Product'] = $this->WebshopProduct->findById($orders[0]['WebshopPosition'][$i]['product_id']);
+		for($i = 0; $i < count($orders); $i++){
+			for($b = 0; $b < count($orders[$i]['WebshopPosition']); $b++){
+				$orders[$i]['WebshopPosition'][$b]['Product'] = $this->WebshopProduct->findById($orders[$i]['WebshopPosition'][$b]['product_id']);
+			}
 		}
 		
 		$this->set('orders', $orders);
