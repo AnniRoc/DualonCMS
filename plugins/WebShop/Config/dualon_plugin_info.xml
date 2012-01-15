@@ -2,9 +2,13 @@
 <dualon>
 	<plugin>
 		<name>WebShop</name>
-		<author>Maximilian Stueber and Patrick Zamzow</author>
+		<author>Maximilian Stueber</author>
 		<version>1.0</version>
 		<permissions>
+            <permission>
+                <role>Registered</role>
+                <action>submitOrder</action>
+            </permission>
         </permissions>
         <views>
             <view>
