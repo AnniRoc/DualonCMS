@@ -32,14 +32,11 @@ class WebshopProduct extends AppModel {
    /**
 	*  DB-Relationship
 	*/
-	public $hasAndBelongsToMany = array(
-        'WebshopProduct' =>
-            array(
-                'className'              => 'WebshopOrder',
-                'joinTable'              => 'webshop_positions',
-                'foreignKey'             => 'product_id',
-                'associationForeignKey'  => 'order_id',
-                'unique'                 => true
-            )
-    );
+	public $hasMany = array(
+		        'WebshopPosition' => array(
+		            'className'     => 'WebshopPosition',
+		            'foreignKey'    => 'product_id',
+		            'dependent'     => true
+	)
+	);
 }

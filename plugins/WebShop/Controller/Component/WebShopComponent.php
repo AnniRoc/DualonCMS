@@ -225,14 +225,42 @@ class WebShopComponent extends Component {
 	 */
 	function submitOrder($controller, $id=null, $contentValues=null, $url=null){
 		
+		//Attributs
+		$order = array();
+		$pos_data = array();
+		
 		//LOAD model
+		$controller->loadModel('WebshopOrder');
+		$controller->loadModel('WebshopPosition');
 		$controller->loadModel('WebshopProduct');
+
+		//CREATE order on DB
+		$controller->WebshopOrder->set(array('customer_id' => '4',
+											 'status' => '0'
+		));
+		$controller->WebshopOrder->save();
 		
 		//GET all IDs (+ amount) from session
 		$productIDs = $controller->Session->read('products');
 		
+		foreach ((!isset($productIDs)) ? array() : $productIDs as $productID) {
+			$product = $controller->WebshopProduct->findById($productID['id'], array('fields' => 'WebshopProduct.id, WebshopProduct.name, WebshopProduct.price'));
+			$product['count'] = $productID['count'];
+			array_push($order, $product);
+			
+			array_push($pos_data,
+					   array('WebshopPosition' => array(
+									'product_id' => $productID['id'],
+									'order_id' => $controller->WebshopOrder->id,
+									'count' => $product['count']))
+			);
+		}
+		
+		//CREATE positions on DB
+		$controller->WebshopPosition->saveMany($pos_data, array('validate' => 'false'));
+		
 		//SEND mail
-		$this->BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $productIDs, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
+		$this->BeeEmail->sendHtmlEmail($to = 'maximilian.stueber@me.com', $subject = 'DualonCMS: New Order', $viewVars = array('order' => $order, 'url' => 'localhost'/*env('SERVER_NAME')*/), $viewName = 'WebShop.order');
 		
 		//UNSET cart
 		$controller->Session->write('products', null);

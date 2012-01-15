@@ -15,16 +15,11 @@ class WebshopOrder extends AppModel {
 		)
 	);
 	
-	public $hasAndBelongsToMany = array(
-        'WebshopProduct' =>
-            array(
-                'className'              => 'WebshopProduct',
-                'joinTable'              => 'webshop_positions',
-                'foreignKey'             => 'order_id',
-                'associationForeignKey'  => 'product_id',
-                'unique'                 => true
-            )
-    );
-	
-	
+	public $hasMany = array(
+	        'WebshopPosition' => array(
+	            'className'     => 'WebshopPosition',
+	            'foreignKey'    => 'order_id',
+	            'dependent'     => true
+	)
+	);
 }
